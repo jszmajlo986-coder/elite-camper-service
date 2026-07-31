@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1f35">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Elite Camper Service</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--navy:#0b1f35;--gold:#b8873b;--green:#275b35;--bg:#f3f5f7;--card:#fff;--muted:#687385;--danger:#a52a2a}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:#102033}
+header{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px #0003}
+header img{width:62px;height:62px;border-radius:12px;background:#fff;object-fit:contain}header h1{font-size:20px;margin:0}header small{color:#e5c58e}
+main{max-width:1100px;margin:auto;padding:16px 16px 94px}.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px}.tile,.card{background:var(--card);border-radius:16px;box-shadow:0 4px 16px #17324d18}
+.tile{padding:22px 14px;text-align:center;font-weight:800;font-size:18px;border:2px solid transparent}.tile:active{transform:scale(.98)}
+.tile span{display:block;font-size:34px;margin-bottom:8px}.tile.gold{border-color:var(--gold)}.tile.green{border-color:#558c63}
+.card{padding:16px;margin-bottom:16px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat{padding:16px;border-radius:14px;background:#fff;border-left:6px solid var(--gold)}.stat b{font-size:27px;display:block}
+h2{margin:4px 0 16px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button,.btn{appearance:none;border:0;border-radius:10px;padding:12px 16px;font-weight:700;font-size:16px;background:var(--navy);color:white}.btn.gold{background:var(--gold);color:#08182b}.btn.light{background:#dfe6ee;color:#102033}.btn.danger{background:var(--danger)}
+input,select,textarea{width:100%;font-size:16px;padding:12px;border:1px solid #cbd3dd;border-radius:10px;background:white}textarea{min-height:90px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}label{font-weight:700;font-size:14px;color:#33445a}label span{display:block;margin-bottom:5px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}th,td{padding:10px;border-bottom:1px solid #e5e9ef;text-align:left;font-size:14px}th{background:#e8edf3}.table-wrap{overflow:auto;border-radius:12px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8dee7;display:grid;grid-template-columns:repeat(5,1fr);z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+nav button{background:#fff;color:#23354b;border-radius:0;padding:9px 4px;font-size:11px}nav button strong{display:block;font-size:22px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dayname{text-align:center;font-size:12px;font-weight:800;color:var(--muted);padding:6px}.day{min-height:92px;background:#fff;border-radius:8px;padding:7px;border:1px solid #dfe5ec}.day.other{opacity:.38}.day.today{border:2px solid var(--gold)}.daynum{font-weight:800}.event{font-size:11px;padding:4px;margin-top:4px;border-radius:6px;background:#dce8f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#signature{width:100%;height:170px;border:2px dashed #8794a5;border-radius:10px;background:#fff;touch-action:none}
+.wo-paper{background:#fff;padding:22px;max-width:820px;margin:auto;color:#0f1d2d}.wo-logo{display:block;width:190px;max-height:150px;object-fit:contain;margin:auto}.wo-title{text-align:center;color:var(--navy);border-bottom:3px solid var(--gold);padding-bottom:8px}
+.notice{background:#fff7df;border-left:5px solid var(--gold);padding:12px;border-radius:8px;margin-bottom:12px}
+@media(max-width:700px){.form-grid{grid-template-columns:1fr}.calendar-grid{gap:2px}.day{min-height:74px;padding:4px}.event{font-size:9px}.stats{grid-template-columns:1fr 1fr}}
+@media print{header,nav,.no-print{display:none!important}body{background:#fff}main{padding:0}.view{display:none!important}#workorders.view.active{display:block!important}.card{box-shadow:none;padding:0}.wo-paper{max-width:none}}
+</style>
+</head>
+<body>
+<header><img src="logo.jpg"><div><h1>Elite Camper Service</h1><small>Mobile Service. Elite Care.</small></div></header>
+<main>
+<section id="home" class="view active">
+  <div class="stats">
+    <div class="stat"><span>Today's Appointments</span><b id="todayCount">0</b></div>
+    <div class="stat"><span>Open Work Orders</span><b id="openCount">0</b></div>
+  </div>
+  <h2 style="margin-top:20px">Business Center</h2>
+  <div class="grid">
+    <button class="tile gold" onclick="show('calendar')"><span>📅</span>Calendar</button>
+    <button class="tile green" onclick="show('customers')"><span>👥</span>Customers</button>
+    <button class="tile gold" onclick="newWorkOrder()"><span>🛠️</span>New Work Order</button>
+    <button class="tile green" onclick="show('workorders')"><span>📋</span>Work Orders</button>
+    <button class="tile gold" onclick="show('settings')"><span>⚙️</span>Business Settings</button>
+  </div>
+</section>
+
+<section id="calendar" class="view">
+  <div class="calendar-head"><button class="btn light" onclick="moveMonth(-1)">‹</button><h2 id="monthTitle"></h2><button class="btn light" onclick="moveMonth(1)">›</button></div>
+  <div class="toolbar"><button class="btn gold" onclick="openAppointment()">+ Appointment</button><button class="btn light" onclick="goToday()">Today</button></div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+</section>
+
+<section id="customers" class="view">
+  <h2>Customers</h2><div class="toolbar"><button class="btn gold" onclick="openCustomer()">+ Customer</button></div>
+  <div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>RV</th><th></th></tr></thead><tbody id="customerRows"></tbody></table></div>
+</section>
+
+<section id="workorders" class="view">
+  <h2 class="no-print">Work Orders</h2>
+  <div class="toolbar no-print"><button class="btn gold" onclick="newWorkOrder()">+ New Work Order</button></div>
+  <div id="woList" class="no-print"></div>
+  <div id="workOrderEditor" class="card" style="display:none">
+    <div id="printArea" class="wo-paper">
+      <img class="wo-logo" src="logo.jpg"><h2 class="wo-title">MOBILE SERVICE WORK ORDER</h2>
+      <div class="form-grid">
+        <label><span>Work Order #</span><input id="woNumber" readonly></label>
+        <label><span>Date</span><input id="woDate" type="date"></label>
+        <label><span>Customer</span><select id="woCustomer"></select></label>
+        <label><span>Status</span><select id="woStatus"><option>Scheduled</option><option>In Progress</option><option>Waiting on Parts</option><option>Completed</option><option>Paid</option></select></label>
+        <label class="full"><span>Service Address</span><input id="woAddress"></label>
+        <label><span>RV Year / Make</span><input id="woRvMake"></label>
+        <label><span>RV Model / VIN</span><input id="woRvModel"></label>
+        <label class="full"><span>Customer Concern / Description</span><textarea id="woConcern"></textarea></label>
+        <label class="full"><span>Cause / Diagnosis</span><textarea id="woCause"></textarea></label>
+        <label class="full"><span>Correction / Repair Performed</span><textarea id="woCorrection"></textarea></label>
+        <label class="full"><span>Parts Used</span><textarea id="woParts"></textarea></label>
+        <label><span>Labor Hours</span><input id="woHours" type="number" step=".25" oninput="calcTotal()"></label>
+        <label><span>Hourly Rate ($)</span><input id="woRate" type="number" step=".01" oninput="calcTotal()"></label>
+        <label><span>Parts Total ($)</span><input id="woPartsTotal" type="number" step=".01" oninput="calcTotal()"></label>
+        <label><span>Service Call ($)</span><input id="woService" type="number" step=".01" oninput="calcTotal()"></label>
+        <label><span>Tax ($)</span><input id="woTax" type="number" step=".01" oninput="calcTotal()"></label>
+        <label><span>Total Due</span><input id="woTotal" readonly></label>
+        <label class="full"><span>Customer Signature</span><canvas id="signature"></canvas></label>
+      </div>
+    </div>
+    <div class="toolbar no-print" style="margin-top:14px">
+      <button onclick="saveWorkOrder()">Save</button>
+      <button class="btn gold" onclick="makePDF(false)">Save PDF</button>
+      <button class="btn green" onclick="makePDF(true)">Email / Share PDF</button>
+      <button class="btn light" onclick="clearSignature()">Clear Signature</button>
+      <button class="btn light" onclick="closeWorkOrder()">Close</button>
+    </div>
+  </div>
+</section>
+
+<section id="settings" class="view">
+ <h2>Business Settings</h2><div class="card"><div class="form-grid">
+  <label><span>Business Name</span><input id="bizName"></label>
+  <label><span>Phone</span><input id="bizPhone"></label>
+  <label><span>Email</span><input id="bizEmail" type="email"></label>
+  <label><span>Default Hourly Rate ($)</span><input id="defaultRate" type="number"></label>
+  <label class="full"><span>Address / Service Area</span><input id="bizAddress"></label>
+ </div><button style="margin-top:14px" onclick="saveSettings()">Save Settings</button></div>
+ <div class="notice">Customer, appointment, and work-order information is saved on this device. For automatic cloud backup and multi-device access, the app needs to be connected to an online database.</div>
+</section>
+</main>
+
+<nav>
+<button onclick="show('home')"><strong>⌂</strong>Home</button>
+<button onclick="show('calendar')"><strong>📅</strong>Calendar</button>
+<button onclick="show('customers')"><strong>👥</strong>Customers</button>
+<button onclick="newWorkOrder()"><strong>🛠️</strong>New Order</button>
+<button onclick="show('workorders')"><strong>📋</strong>Orders</button>
+</nav>
+
+<dialog id="customerDialog"><form method="dialog" class="card" style="min-width:min(560px,90vw)">
+<h2>Customer</h2><div class="form-grid">
+<label><span>Name</span><input id="cName" required></label><label><span>Phone</span><input id="cPhone"></label>
+<label><span>Email</span><input id="cEmail" type="email"></label><label><span>Street Address</span><input id="cAddress"></label>
+<label><span>RV Year / Make</span><input id="cRvMake"></label><label><span>RV Model / VIN</span><input id="cRvModel"></label>
+</div><div class="toolbar" style="margin-top:14px"><button type="button" onclick="saveCustomer()">Save</button><button class="btn light">Cancel</button></div></form></dialog>
+
+<dialog id="appointmentDialog"><form method="dialog" class="card" style="min-width:min(560px,90vw)">
+<h2>Appointment</h2><div class="form-grid">
+<label><span>Date</span><input id="aDate" type="date"></label><label><span>Time</span><input id="aTime" type="time"></label>
+<label><span>Customer</span><select id="aCustomer"></select></label><label><span>Status</span><select id="aStatus"><option>Requested</option><option>Confirmed</option><option>Completed</option><option>Canceled</option></select></label>
+<label class="full"><span>Service / Notes</span><textarea id="aNotes"></textarea></label>
+</div><div class="toolbar" style="margin-top:14px"><button type="button" onclick="saveAppointment()">Save</button><button class="btn light">Cancel</button></div></form></dialog>
+
+<script>
+const db={
+ customers:JSON.parse(localStorage.getItem('ecs_customers')||'[]'),
+ appointments:JSON.parse(localStorage.getItem('ecs_appointments')||'[]'),
+ workorders:JSON.parse(localStorage.getItem('ecs_workorders')||'[]'),
+ settings:JSON.parse(localStorage.getItem('ecs_settings')||'{"name":"Elite Camper Service","rate":125}')
+};
+let currentMonth=new Date(), editingCustomer=null, editingWO=null;
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem('ecs_customers',JSON.stringify(db.customers));localStorage.setItem('ecs_appointments',JSON.stringify(db.appointments));localStorage.setItem('ecs_workorders',JSON.stringify(db.workorders));}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active'); if(id==='calendar')renderCalendar(); if(id==='customers')renderCustomers(); if(id==='workorders')renderWOs(); window.scrollTo(0,0)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function customerOptions(sel){sel.innerHTML='<option value="">Select customer</option>'+db.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}
+function openCustomer(id=null){editingCustomer=id;let c=db.customers.find(x=>x.id===id)||{};['Name','Phone','Email','Address','RvMake','RvModel'].forEach(k=>$('c'+k).value=c[k.charAt(0).toLowerCase()+k.slice(1)]||'');$('customerDialog').showModal()}
+function saveCustomer(){let name=$('cName').value.trim();if(!name)return alert('Enter a customer name.');let c={id:editingCustomer||crypto.randomUUID(),name,phone:$('cPhone').value,email:$('cEmail').value,address:$('cAddress').value,rvMake:$('cRvMake').value,rvModel:$('cRvModel').value};let i=db.customers.findIndex(x=>x.id===c.id);i>=0?db.customers[i]=c:db.customers.push(c);persist();$('customerDialog').close();renderCustomers()}
+function renderCustomers(){$('customerRows').innerHTML=db.customers.map(c=>`<tr><td>${esc(c.name)}</td><td><a href="tel:${esc(c.phone)}">${esc(c.phone)}</a></td><td><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></td><td>${esc(c.rvMake+' '+c.rvModel)}</td><td><button onclick="openCustomer('${c.id}')">Edit</button></td></tr>`).join('')||'<tr><td colspan="5">No customers yet.</td></tr>'}
+function openAppointment(date=''){customerOptions($('aCustomer'));$('aDate').value=date||new Date().toISOString().slice(0,10);$('aTime').value='09:00';$('aNotes').value='';$('appointmentDialog').showModal()}
+function saveAppointment(){if(!$('aDate').value||!$('aCustomer').value)return alert('Choose a date and customer.');db.appointments.push({id:crypto.randomUUID(),date:$('aDate').value,time:$('aTime').value,customerId:$('aCustomer').value,status:$('aStatus').value,notes:$('aNotes').value});persist();$('appointmentDialog').close();renderCalendar();updateStats()}
+function moveMonth(n){currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+n,1);renderCalendar()} function goToday(){currentMonth=new Date();renderCalendar()}
+function localDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function renderCalendar(){let y=currentMonth.getFullYear(),m=currentMonth.getMonth();$('monthTitle').textContent=currentMonth.toLocaleString(undefined,{month:'long',year:'numeric'});let first=new Date(y,m,1),start=new Date(y,m,1-first.getDay()),today=localDate(new Date());let html=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(x=>`<div class="dayname">${x}</div>`).join('');for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let ds=localDate(d),events=db.appointments.filter(a=>a.date===ds);html+=`<div class="day ${d.getMonth()!==m?'other':''} ${ds===today?'today':''}" onclick="openAppointment('${ds}')"><div class="daynum">${d.getDate()}</div>${events.map(a=>{let c=db.customers.find(x=>x.id===a.customerId);return `<div class="event">${a.time||''} ${esc(c?.name||'Customer')}</div>`}).join('')}</div>`}$('calendarGrid').innerHTML=html}
+function newWorkOrder(){show('workorders');editingWO=null;$('workOrderEditor').style.display='block';customerOptions($('woCustomer'));let n=(Math.max(0,...db.workorders.map(w=>parseInt((w.number||'').replace(/\D/g,''))||0))+1);$('woNumber').value='WO-'+String(n).padStart(4,'0');$('woDate').value=new Date().toISOString().slice(0,10);$('woStatus').value='Scheduled';['woAddress','woRvMake','woRvModel','woConcern','woCause','woCorrection','woParts','woHours','woPartsTotal','woService','woTax'].forEach(id=>$(id).value='');$('woRate').value=db.settings.rate||125;$('woTotal').value='$0.00';clearSignature();setTimeout(resizeSignature,50);$('workOrderEditor').scrollIntoView()}
+$('woCustomer').addEventListener('change',()=>{let c=db.customers.find(x=>x.id===$('woCustomer').value);if(c){$('woAddress').value=c.address||'';$('woRvMake').value=c.rvMake||'';$('woRvModel').value=c.rvModel||''}})
+function calcTotal(){let v=id=>parseFloat($(id).value)||0,total=v('woHours')*v('woRate')+v('woPartsTotal')+v('woService')+v('woTax');$('woTotal').value='$'+total.toFixed(2);return total}
+function collectWO(){return{id:editingWO||crypto.randomUUID(),number:$('woNumber').value,date:$('woDate').value,customerId:$('woCustomer').value,status:$('woStatus').value,address:$('woAddress').value,rvMake:$('woRvMake').value,rvModel:$('woRvModel').value,concern:$('woConcern').value,cause:$('woCause').value,correction:$('woCorrection').value,parts:$('woParts').value,hours:$('woHours').value,rate:$('woRate').value,partsTotal:$('woPartsTotal').value,service:$('woService').value,tax:$('woTax').value,total:calcTotal(),signature:$('signature').toDataURL()}}
+function saveWorkOrder(){if(!$('woCustomer').value)return alert('Choose a customer.');let w=collectWO(),i=db.workorders.findIndex(x=>x.id===w.id);i>=0?db.workorders[i]=w:db.workorders.push(w);editingWO=w.id;persist();renderWOs();updateStats();alert('Work order saved.')}
+function renderWOs(){$('woList').innerHTML=db.workorders.map(w=>{let c=db.customers.find(x=>x.id===w.customerId);return `<div class="card"><b>${esc(w.number)}</b> — ${esc(c?.name||'Customer')}<br><small>${esc(w.date)} · ${esc(w.status)} · $${Number(w.total||0).toFixed(2)}</small><div class="toolbar" style="margin-top:10px"><button onclick="editWO('${w.id}')">Open</button></div></div>`}).join('')||'<div class="card">No work orders yet.</div>'}
+function editWO(id){let w=db.workorders.find(x=>x.id===id);if(!w)return;editingWO=id;$('workOrderEditor').style.display='block';customerOptions($('woCustomer'));Object.entries({woNumber:w.number,woDate:w.date,woCustomer:w.customerId,woStatus:w.status,woAddress:w.address,woRvMake:w.rvMake,woRvModel:w.rvModel,woConcern:w.concern,woCause:w.cause,woCorrection:w.correction,woParts:w.parts,woHours:w.hours,woRate:w.rate,woPartsTotal:w.partsTotal,woService:w.service,woTax:w.tax}).forEach(([id,v])=>$(id).value=v||'');calcTotal();setTimeout(()=>{resizeSignature();if(w.signature){let im=new Image;im.onload=()=>ctx.drawImage(im,0,0,canvas.width/devicePixelRatio,canvas.height/devicePixelRatio);im.src=w.signature}},50);$('workOrderEditor').scrollIntoView()}
+function closeWorkOrder(){$('workOrderEditor').style.display='none'}
+async function makePDF(share){saveWorkOrder();let area=$('printArea'),canvasImg=await html2canvas(area,{scale:2,useCORS:true,backgroundColor:'#ffffff'}),img=canvasImg.toDataURL('image/jpeg',.92),{jsPDF}=window.jspdf,pdf=new jsPDF('p','pt','letter'),pw=pdf.internal.pageSize.getWidth(),ph=canvasImg.height*pw/canvasImg.width;pdf.addImage(img,'JPEG',0,0,pw,ph);let blob=pdf.output('blob'),name=$('woNumber').value+'.pdf',customer=db.customers.find(c=>c.id===$('woCustomer').value);if(share&&navigator.canShare){let file=new File([blob],name,{type:'application/pdf'});if(navigator.canShare({files:[file]})){await navigator.share({title:'Elite Camper Service Work Order',text:`Work order ${$('woNumber').value} from Elite Camper Service`,files:[file]});return}}pdf.save(name);if(share&&customer?.email)location.href=`mailto:${encodeURIComponent(customer.email)}?subject=${encodeURIComponent('Elite Camper Service Work Order '+$('woNumber').value)}&body=${encodeURIComponent('Hello '+customer.name+',\\n\\nAttached is your Elite Camper Service work order.\\n\\nThank you.')}`}
+function updateStats(){let today=new Date().toISOString().slice(0,10);$('todayCount').textContent=db.appointments.filter(a=>a.date===today&&a.status!=='Canceled').length;$('openCount').textContent=db.workorders.filter(w=>!['Completed','Paid'].includes(w.status)).length}
+function loadSettings(){$('bizName').value=db.settings.name||'Elite Camper Service';$('bizPhone').value=db.settings.phone||'';$('bizEmail').value=db.settings.email||'';$('bizAddress').value=db.settings.address||'';$('defaultRate').value=db.settings.rate||125}
+function saveSettings(){db.settings={name:$('bizName').value,phone:$('bizPhone').value,email:$('bizEmail').value,address:$('bizAddress').value,rate:parseFloat($('defaultRate').value)||0};localStorage.setItem('ecs_settings',JSON.stringify(db.settings));alert('Settings saved.')}
+const canvas=$('signature'),ctx=canvas.getContext('2d');let drawing=false;
+function resizeSignature(){let r=canvas.getBoundingClientRect(),ratio=devicePixelRatio||1;canvas.width=r.width*ratio;canvas.height=r.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=2.2;ctx.lineCap='round';ctx.strokeStyle='#08182b'}
+function pt(e){let r=canvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+canvas.addEventListener('pointerdown',e=>{drawing=true;let p=pt(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});canvas.addEventListener('pointermove',e=>{if(!drawing)return;let p=pt(e);ctx.lineTo(p.x,p.y);ctx.stroke()});window.addEventListener('pointerup',()=>drawing=false);
+function clearSignature(){ctx.clearRect(0,0,canvas.width,canvas.height)}
+window.addEventListener('resize',()=>{if($('workOrderEditor').style.display!=='none')resizeSignature()});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js');
+loadSettings();renderCustomers();renderCalendar();renderWOs();updateStats();
+</script>
+</body></html>
