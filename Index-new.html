@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1f35">
+<title>Elite Camper Service</title>
+
+<style>
+:root{
+  --navy:#0b1f35;
+  --blue:#16385f;
+  --gold:#bd8b3e;
+  --green:#2d6a40;
+  --bg:#f3f6f8;
+  --white:#ffffff;
+  --text:#17212b;
+  --muted:#6b7280;
+  --line:#dfe5ea;
+  --red:#b42318;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  color:white;
+  padding:18px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header-row{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo{
+  width:55px;
+  height:55px;
+  border-radius:12px;
+  object-fit:cover;
+  background:white;
+}
+
+header h1{
+  margin:0;
+  font-size:22px;
+}
+
+header small{
+  opacity:.8;
+}
+
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:18px 16px 100px;
+}
+
+.view{display:none}
+.view.active{display:block}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+
+h2,h3{margin-top:0}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+}
+
+.stat{
+  background:white;
+  border-radius:15px;
+  padding:18px;
+  text-align:center;
+  border:1px solid var(--line);
+}
+
+.stat strong{
+  display:block;
+  font-size:30px;
+  color:var(--navy);
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn{
+  background:var(--navy);
+  color:white;
+}
+
+.btn-green{
+  background:var(--green);
+  color:white;
+}
+
+.btn-gold{
+  background:var(--gold);
+  color:white;
+}
+
+.btn-red{
+  background:var(--red);
+  color:white;
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+label span{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+
+input,textarea,select{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccd5dd;
+  border-radius:10px;
+  font-size:16px;
+  background:white;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.full{grid-column:1/-1}
+
+.list-item{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:14px;
+  margin:10px 0;
+}
+
+.list-item strong{
+  font-size:17px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:13px;
+}
+
+nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  border-top:1px solid var(--line);
+  display:flex;
+  z-index:20;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+nav button{
+  flex:1;
+  background:white;
+  color:#56606b;
+  border-radius:0;
+  padding:10px 2px;
+  font-size:11px;
+}
+
+nav button.active{
+  color:var(--navy);
+  background:#eef3f7;
+}
+
+.nav-icon{
+  display:block;
+  font-size:21px;
+  margin-bottom:2px;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:var(--muted);
+}
+
+.workorder{
+  border-left:5px solid var(--gold);
+}
+
+.total{
+  font-size:22px;
+  font-weight:800;
+  color:var(--navy);
+}
+
+@media(max-width:700px){
+  .form-grid{grid-template-columns:1fr}
+  header h1{font-size:19px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-row">
+    <img src="logo.jpg" class="logo" onerror="this.style.display='none'">
+    <div>
+      <h1>Elite Camper Service</h1>
+      <small>RV Service Management</small>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="dashboard" class="view active">
+
+  <div class="card">
+    <h2>Dashboard</h2>
+    <p>Welcome to Elite Camper Service.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <strong id="customerCount">0</strong>
+      Customers
+    </div>
+
+    <div class="stat">
+      <strong id="appointmentCount">0</strong>
+      Appointments
+    </div>
+
+    <div class="stat">
+      <strong id="workOrderCount">0</strong>
+      Work Orders
+    </div>
+
+    <div class="stat">
+      <strong id="partsCount">0</strong>
+      Parts
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Quick Actions</h3>
+
+    <div class="toolbar">
+      <button class="btn" onclick="showView('customers')">
+        + Customer
+      </button>
+
+      <button class="btn-green" onclick="showView('appointments')">
+        + Appointment
+      </button>
+
+      <button class="btn-gold" onclick="showView('workorders')">
+        + Work Order
+      </button>
+    </div>
+  </div>
+
+</section>
+
+
+<section id="customers" class="view">
+
+  <div class="card">
+    <h2>Customers</h2>
+
+    <div class="form-grid">
+
+      <label>
+        <span>Name</span>
+        <input id="custName">
+      </label>
+
+      <label>
+        <span>Phone</span>
+        <input id="custPhone" type="tel">
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input id="custEmail" type="email">
+      </label>
+
+      <label>
+        <span>RV / Camper</span>
+        <input id="custRV">
+      </label>
+
+      <label class="full">
+        <span>Address</span>
+        <input id="custAddress">
+      </label>
+
+      <label class="full">
+        <span>Notes</span>
+        <textarea id="custNotes"></textarea>
+      </label>
+
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-green" onclick="saveCustomer()">
+        Save Customer
+      </button>
+    </div>
+  </div>
+
+  <div id="customerList"></div>
+
+</section>
+
+
+<section id="appointments" class="view">
+
+  <div class="card">
+    <h2>Appointments</h2>
+
+    <div class="form-grid">
+
+      <label>
+        <span>Customer</span>
+        <input id="apptCustomer">
+      </label>
+
+      <label>
+        <span>Phone</span>
+        <input id="apptPhone" type="tel">
+      </label>
+
+      <label>
+        <span>Date</span>
+        <input id="apptDate" type="date">
+      </label>
+
+      <label>
+        <span>Time</span>
+        <input id="apptTime" type="time">
+      </label>
+
+      <label class="full">
+        <span>Service Needed</span>
+        <textarea id="apptService"></textarea>
+      </label>
+
+      <label class="full">
+        <span>Location</span>
+        <input id="apptLocation">
+      </label>
+
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-green" onclick="saveAppointment()">
+        Save Appointment
+      </button>
+    </div>
+  </div>
+
+  <div id="appointmentList"></div>
+
+</section>
+
+
+<section id="workorders" class="view">
+
+  <div class="card">
+    <h2>Work Orders</h2>
+
+    <div class="form-grid">
+
+      <label>
+        <span>Customer</span>
+        <input id="woCustomer">
+      </label>
+
+      <label>
+        <span>Phone</span>
+        <input id="woPhone" type="tel">
+      </label>
+
+      <label>
+        <span>RV Year / Make / Model</span>
+        <input id="woRV">
+      </label>
+
+      <label>
+        <span>Date</span>
+        <input id="woDate" type="date">
+      </label>
+
+      <label class="full">
+        <span>Description / Customer Complaint</span>
+        <textarea id="woDescription"></textarea>
+      </label>
+
+      <label class="full">
+        <span>Cause</span>
+        <textarea id="woCause"></textarea>
+      </label>
+
+      <label class="full">
+        <span>Correction / Repairs Performed</span>
+        <textarea id="woCorrection"></textarea>
+      </label>
+
+      <label>
+        <span>Labor Hours</span>
+        <input id="woHours" type="number" step=".25">
+      </label>
+
+      <label>
+        <span>Labor Rate</span>
+        <input id="woRate" type="number" step=".01" value="175">
+      </label>
+
+      <label>
+        <span>Parts Total</span>
+        <input id="woParts" type="number" step=".01" value="0">
+      </label>
+
+      <label>
+        <span>Service Call</span>
+        <input id="woServiceCall" type="number" step=".01" value="0">
+      </label>
+
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-green" onclick="saveWorkOrder()">
+        Save Work Order
+      </button>
+    </div>
+  </div>
+
+  <div id="workOrderList"></div>
+
+</section>
+
+
+<section id="parts" class="view">
+
+  <div class="card">
+    <h2>Parts</h2>
+
+    <div class="form-grid">
+
+      <label>
+        <span>Part Name</span>
+        <input id="partName">
+      </label>
+
+      <label>
+        <span>Part Number</span>
+        <input id="partNumber">
+      </label>
+
+      <label>
+        <span>Customer / Job</span>
+        <input id="partCustomer">
+      </label>
+
+      <label>
+        <span>Status</span>
+        <select id="partStatus">
+          <option>Need to Order</option>
+          <option>Ordered</option>
+          <option>Received</option>
+          <option>Installed</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Cost</span>
+        <input id="partCost" type="number" step=".01">
+      </label>
+
+      <label class="full">
+        <span>Notes</span>
+        <textarea id="partNotes"></textarea>
+      </label>
+
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-green" onclick="savePart()">
+        Save Part
+      </button>
+    </div>
+  </div>
+
+  <div id="partsList"></div>
+
+</section>
+
+</main>
+
+
+<nav>
+
+<button class="active" onclick="showView('dashboard',this)">
+  <span class="nav-icon">🏠</span>
+  Home
+</button>
+
+<button onclick="showView('customers',this)">
+  <span class="nav-icon">👤</span>
+  Customers
+</button>
+
+<button onclick="showView('appointments',this)">
+  <span class="nav-icon">📅</span>
+  Schedule
+</button>
+
+<button onclick="showView('workorders',this)">
+  <span class="nav-icon">📝</span>
+  Work Orders
+</button>
+
+<button onclick="showView('parts',this)">
+  <span class="nav-icon">🔧</span>
+  Parts
+</button>
+
+</nav>
+
+
+<script>
+
+let db = JSON.parse(localStorage.getItem("eliteCamperService")) || {
+  customers:[],
+  appointments:[],
+  workorders:[],
+  parts:[]
+};
+
+function saveDB(){
+  localStorage.setItem("eliteCamperService",JSON.stringify(db));
+  renderAll();
+}
+
+function id(){
+  return Date.now().toString();
+}
+
+function esc(text){
+  const div=document.createElement("div");
+  div.textContent=text || "";
+  return div.innerHTML;
+}
+
+function showView(name,button){
+
+  document.querySelectorAll(".view").forEach(v=>{
+    v.classList.remove("active");
+  });
+
+  document.getElementById(name).classList.add("active");
+
+  document.querySelectorAll("nav button").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  if(button) button.classList.add("active");
+
+  window.scrollTo(0,0);
+}
+
+function saveCustomer(){
+
+  const name=document.getElementById("custName").value.trim();
+
+  if(!name){
+    alert("Enter customer name.");
+    return;
+  }
+
+  db.customers.push({
+    id:id(),
+    name:name,
+    phone:document.getElementById("custPhone").value,
+    email:document.getElementById("custEmail").value,
+    rv:document.getElementById("custRV").value,
+    address:document.getElementById("custAddress").value,
+    notes:document.getElementById("custNotes").value
+  });
+
+  ["custName","custPhone","custEmail","custRV","custAddress","custNotes"]
+  .forEach(x=>document.getElementById(x).value="");
+
+  saveDB();
+}
+
+function saveAppointment(){
+
+  const customer=document.getElementById("apptCustomer").value.trim();
+
+  if(!customer){
+    alert("Enter customer name.");
+    return;
+  }
+
+  db.appointments.push({
+    id:id(),
+    customer:customer,
+    phone:document.getElementById("apptPhone").value,
+    date:document.getElementById("apptDate").value,
+    time:document.getElementById("apptTime").value,
+    service:document.getElementById("apptService").value,
+    location:document.getElementById("apptLocation").value
+  });
+
+  saveDB();
+
+  ["apptCustomer","apptPhone","apptDate","apptTime","apptService","apptLocation"]
+  .forEach(x=>document.getElementById(x).value="");
+}
+
+function saveWorkOrder(){
+
+  const customer=document.getElementById("woCustomer").value.trim();
+
+  if(!customer){
+    alert("Enter customer name.");
+    return;
+  }
+
+  const hours=parseFloat(document.getElementById("woHours").value)||0;
+  const rate=parseFloat(document.getElementById("woRate").value)||0;
+  const parts=parseFloat(document.getElementById("woParts").value)||0;
+  const service=parseFloat(document.getElementById("woServiceCall").value)||0;
+
+  db.workorders.push({
+    id:id(),
+    number:"ECS-"+String(Date.now()).slice(-6),
+    customer:customer,
+    phone:document.getElementById("woPhone").value,
+    rv:document.getElementById("woRV").value,
+    date:document.getElementById("woDate").value,
+    description:document.getElementById("woDescription").value,
+    cause:document.getElementById("woCause").value,
+    correction:document.getElementById("woCorrection").value,
+    hours:hours,
+    rate:rate,
+    parts:parts,
+    service:service,
+    total:(hours*rate)+parts+service
+  });
+
+  saveDB();
+
+  alert("Work order saved.");
+}
+
+function savePart(){
+
+  const name=document.getElementById("partName").value.trim();
+
+  if(!name){
+    alert("Enter part name.");
+    return;
+  }
+
+  db.parts.push({
+    id:id(),
+    name:name,
+    number:document.getElementById("partNumber").value,
+    customer:document.getElementById("partCustomer").value,
+    status:document.getElementById("partStatus").value,
+    cost:document.getElementById("partCost").value,
+    notes:document.getElementById("partNotes").value
+  });
+
+  saveDB();
+}
+
+function removeItem(type,itemId){
+
+  if(!confirm("Delete this item?")) return;
+
+  db[type]=db[type].filter(x=>x.id!==itemId);
+
+  saveDB();
+}
+
+function renderCustomers(){
+
+  const box=document.getElementById("customerList");
+
+  if(!db.customers.length){
+    box.innerHTML='<div class="empty">No customers yet.</div>';
+    return;
+  }
+
+  box.innerHTML=db.customers.map(c=>`
+    <div class="list-item">
+      <strong>${esc(c.name)}</strong>
+      <div>${esc(c.phone)}</div>
+      <div>${esc(c.email)}</div>
+      <div class="muted">${esc(c.rv)}</div>
+
+      <div class="toolbar">
+        <button class="btn-red"
+        onclick="removeItem('customers','${c.id}')">
+        Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAppointments(){
+
+  const box=document.getElementById("appointmentList");
+
+  if(!db.appointments.length){
+    box.innerHTML='<div class="empty">No appointments yet.</div>';
+    return;
+  }
+
+  box.innerHTML=db.appointments.map(a=>`
+    <div class="list-item">
+      <strong>${esc(a.customer)}</strong>
+      <div>📅 ${esc(a.date)} ${esc(a.time)}</div>
+      <div>${esc(a.service)}</div>
+      <div class="muted">${esc(a.location)}</div>
+
+      <div class="toolbar">
+        <button class="btn-red"
+        onclick="removeItem('appointments','${a.id}')">
+        Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderWorkOrders(){
+
+  const box=document.getElementById("workOrderList");
+
+  if(!db.workorders.length){
+    box.innerHTML='<div class="empty">No work orders yet.</div>';
+    return;
+  }
+
+  box.innerHTML=db.workorders.map(w=>`
+    <div class="list-item workorder">
+
+      <strong>${esc(w.number)} — ${esc(w.customer)}</strong>
+
+      <p><b>Description:</b><br>${esc(w.description)}</p>
+
+      <p><b>Cause:</b><br>${esc(w.cause)}</p>
+
+      <p><b>Correction:</b><br>${esc(w.correction)}</p>
+
+      <div>
+        Labor: ${w.hours} hrs × $${Number(w.rate).toFixed(2)}
+      </div>
+
+      <div>
+        Parts: $${Number(w.parts).toFixed(2)}
+      </div>
+
+      <div>
+        Service Call: $${Number(w.service).toFixed(2)}
+      </div>
+
+      <p class="total">
+        Total: $${Number(w.total).toFixed(2)}
+      </p>
+
+      <div class="toolbar">
+
+        <button class="btn" onclick="window.print()">
+          Print
+        </button>
+
+        <button class="btn-red"
+        onclick="removeItem('workorders','${w.id}')">
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  `).join("");
+}
+
+function renderParts(){
+
+  const box=document.getElementById("partsList");
+
+  if(!db.parts.length){
+    box.innerHTML='<div class="empty">No parts entered yet.</div>';
+    return;
+  }
+
+  box.innerHTML=db.parts.map(p=>`
+    <div class="list-item">
+
+      <strong>${esc(p.name)}</strong>
+
+      <div>Part #: ${esc(p.number)}</div>
+
+      <div>Customer: ${esc(p.customer)}</div>
+
+      <div>Status: ${esc(p.status)}</div>
+
+      <div>Cost: $${Number(p.cost||0).toFixed(2)}</div>
+
+      <div class="toolbar">
+        <button class="btn-red"
+        onclick="removeItem('parts','${p.id}')">
+          Delete
+        </button>
+      </div>
+
+    </div>
+  `).join("");
+}
+
+function renderAll(){
+
+  document.getElementById("customerCount").textContent=db.customers.length;
+  document.getElementById("appointmentCount").textContent=db.appointments.length;
+  document.getElementById("workOrderCount").textContent=db.workorders.length;
+  document.getElementById("partsCount").textContent=db.parts.length;
+
+  renderCustomers();
+  renderAppointments();
+  renderWorkOrders();
+  renderParts();
+}
+
+document.getElementById("woDate").value =
+new Date().toISOString().split("T")[0];
+
+renderAll();
+
+</script>
+
+</body>
+</html>
