@@ -142,8 +142,18 @@ nav button{flex:1;background:white;border-radius:0;padding:8px 3px;font-size:11p
 <div id="userModal" class="modal"><div class="modal-box"><h2>User</h2><div class="form-grid">
 <label><span>Name</span><input id="uName"></label><label><span>Email</span><input id="uEmail" type="email"></label><label><span>Role</span><select id="uRole"><option>Technician</option><option>Office</option><option>Admin</option></select></label><label><span>PIN</span><input id="uPin" inputmode="numeric" maxlength="6"></label><label><span>Status</span><select id="uStatus"><option>Active</option><option>Disabled</option></select></label></div>
 <div class="toolbar"><button class="btn-green" onclick="saveUser()">Save User</button><button class="btn-light" onclick="closeModal('userModal')">Cancel</button><button id="deleteUserBtn" class="btn-danger" onclick="deleteUser()">Delete</button></div></div></div>
-
 <script>
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyA80imMPPAgvftLqqfGlanU8YJQHKY5pL0",
+  authDomain: "elitecanperservice.firebaseapp.com",
+  projectId: "elitecanperservice",
+  storageBucket: "elitecanperservice.firebasestorage.app",
+  messagingSenderId: "786187791461",
+  appId: "1:786187791461:web:4e67302134f4fc8b626a8c",
+  measurementId: "G-HFLBVFSX3T"
+};
+
 const $=id=>document.getElementById(id), uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 const localDate=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'), todayStr=()=>localDate(new Date());
 const seedUsers=[
