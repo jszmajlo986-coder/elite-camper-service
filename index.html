@@ -241,7 +241,28 @@ nav button.active{
 </head>
 
 <body>
+  <div id="loginScreen" style="position:fixed;inset:0;background:#0b1f35;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
 
+  <div style="background:white;padding:25px;border-radius:16px;width:100%;max-width:400px;">
+
+    <h2>Elite Camper Service</h2>
+
+    <p>Sign in to continue</p>
+
+    <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:12px;margin-bottom:10px;">
+
+    <input id="loginPassword" type="password" placeholder="Password" style="width:100%;padding:12px;margin-bottom:10px;">
+
+    <button onclick="loginUser()" style="width:100%;padding:12px;">
+
+      Sign In
+
+    </button>
+
+    <p id="loginError"></p>
+
+  </div>
+  </div>
 <header>
   <div class="header-row">
     <img src="logo.jpg" class="logo" onerror="this.style.display='none'">
@@ -568,10 +589,75 @@ nav button.active{
 </button>
 
 </nav>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 
 <script>
+const firebaseConfig = {
 
+  apiKey: "AIzaSyA80imMPPAgvftLqqfGlanU8YJQHKY5pL0",
+
+  authDomain: "elitecamperservice.firebaseapp.com",
+
+  projectId: "elitecamperservice",
+
+  storageBucket: "elitecamperservice.firebasestorage.app",
+
+  messagingSenderId: "786187791461",
+
+  appId:"1:786187791461:web:4e67302134f4fc8b626a8c",
+
+  measurementId: "G-HFLBVFSX3T"
+
+};
+
+  firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+const firestore = firebase.firestore();
+  async function loginUser(){
+
+  const email = document.getElementById("loginEmail").value.trim();
+
+  const password = document.getElementById("loginPassword").value;
+
+  const errorBox = document.getElementById("loginError");
+
+  try{
+
+    await auth.signInWithEmailAndPassword(email, password);
+
+    document.getElementById("loginScreen").style.display = "none";
+
+    errorBox.textContent = "";
+
+  }catch(error){
+
+    errorBox.textContent = "Sign in failed. Check your email and password.";
+
+    console.error(error);
+
+  }
+
+}
+
+auth.onAuthStateChanged((user) => {
+
+  if(user){
+
+    document.getElementById("loginScreen").style.display = "none";
+
+  }else{
+
+    document.getElementById("loginScreen").style.display = "flex";
+
+  }
+
+});
 let db = JSON.parse(localStorage.getItem("eliteCamperService")) || {
   customers:[],
   appointments:[],
@@ -579,9 +665,26 @@ let db = JSON.parse(localStorage.getItem("eliteCamperService")) || {
   parts:[]
 };
 
-function saveDB(){
-  localStorage.setItem("eliteCamperService",JSON.stringify(db));
+async function saveDB(){
+
+  localStorage.setItem("eliteCamperService", JSON.stringify(db));
+
   renderAll();
+
+  if(auth.currentUser){
+
+    try{
+
+      await firestore.collection("eliteCamperService").doc("shared").set(db);
+
+    }catch(error){
+
+      console.error("Firebase save error:", error);
+
+    }
+
+  }
+
 }
 
 function id(){
@@ -883,6 +986,35 @@ document.getElementById("woDate").value =
 new Date().toISOString().split("T")[0];
 
 renderAll();
+  auth.onAuthStateChanged(async (user) => {
+
+  if (!user) return;
+
+  try {
+
+    const doc = await firestore
+
+      .collection("eliteCamperService")
+
+      .doc("shared")
+
+      .get();
+
+    if (doc.exists) {
+
+      db = doc.data();
+
+      localStorage.setItem("eliteCamperService", JSON.stringify(db));
+
+      renderAll();
+
+    }
+
+  } catch (error) {
+
+    console.error("Firebase load error:", error);
+  }
+  });
 
 </script>
 
