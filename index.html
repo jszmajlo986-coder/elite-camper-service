@@ -981,6 +981,31 @@ function renderAll(){
   renderWorkOrders();
   renderParts();
 }
+  async function saveDB(){
+
+  localStorage.setItem("eliteCamperService", JSON.stringify(db));
+
+  try {
+
+    await firestore
+
+      .collection("eliteCamperService")
+
+      .doc("shared")
+
+      .set(db);
+
+    renderAll();
+
+  } catch (error) {
+
+    console.error("Firebase save error:", error);
+
+    alert("Could not sync data to Firebase.");
+
+  }
+
+}
 
 document.getElementById("woDate").value =
 new Date().toISOString().split("T")[0];
